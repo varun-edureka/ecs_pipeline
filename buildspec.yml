@@ -13,10 +13,10 @@ phases:
   build:
     commands:
       - echo build Docker image on `date`
-      - docker build -t httpd:$CODEBUILD_BUILD_NUMBER .
-      - docker tag httpd:latest 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$IMAGE_TAG
+      - docker build -t httpd:`$CODEBUILD_BUILD_NUMBER` .
+      - docker tag httpd:latest 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:`$CODEBUILD_BUILD_NUMBER`
   post_build:
     commands:
       - echo build Docker image complete `date`
       - echo push latest Docker images to ECR...
-      - docker push 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$IMAGE_TAG
+      - docker push 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:`$CODEBUILD_BUILD_NUMBER`
