@@ -1,13 +1,12 @@
 version: 0.2
 
-env:
-  parameter-store:
-    IMAGE_TAG: "CODEBUILD_BUILD_NUMBER"
 phases:
   install:
     commands:
       - echo install step...
       - echo $CODEBUILD_BUILD_NUMBER
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}'  
       - echo $IMAGE_TAG
   pre_build:
     commands:
