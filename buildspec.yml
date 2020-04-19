@@ -1,26 +1,32 @@
+
 version: 0.2
 
 phases:
   install:
-    commands:
-      - echo install step...
-      - echo $CODEBUILD_BUILD_NUMBER > build_number.txt
-      - var=$(cat build_number.txt)
-      - echo $var 
+    runtime-versions:
+      docker: 18
   pre_build:
     commands:
+      - echo Logging in to Amazon ECR...
       - aws --version
-      - echo logging in to AWS ECR...
-      - $(aws ecr get-login --no-include-email --region us-west-2)
+      - $(aws ecr get-login --region us-west-2 --no-include-email)
+      - REPOSITORY_URI=904147861902.dkr.ecr.us-west-2.amazonaws.com/manik
+      - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
+      - IMAGE_TAG=${COMMIT_HASH:=latest}
   build:
     commands:
-      - echo build Docker image on `date`
-      - docker build -t httpd:$var .
-      - docker tag httpd:latest 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$var
+      - echo Build started on `date`
+      - echo Building the Docker image...
+      - docker build -t $REPOSITORY_URI:latest .
+      - docker tag $REPOSITORY_URI:latest $REPOSITORY_URI:$IMAGE_TAG
   post_build:
     commands:
-      - echo build Docker image complete `date`
-      - echo push latest Docker images to ECR...
-      - docker push 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$var
-  
+      - echo Build completed on `date`
+      - echo Pushing the Docker images...
+      - docker push $REPOSITORY_URI:latest
+      - docker push $REPOSITORY_URI:$IMAGE_TAG
+      - echo Writing image definitions file...
+      - printf '[{"name":"manik","imageUri":"%s"}]' $REPOSITORY_URI:$IMAGE_TAG > imagedefinitions.json
+artifacts:
+    files: imagedefinitions.json  
 
