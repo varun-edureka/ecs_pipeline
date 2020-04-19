@@ -1,9 +1,13 @@
 version: 0.2
+
+env:
+  parameter-store:
+    IMAGE_TAG: "CODEBUILD_BUILD_NUMBER"
 phases:
   install:
     commands:
       - echo install step...
-      - echo $CODEBUILD_BUILD_NUMBER  
+      - echo $CODEBUILD_BUILD_NUMBER
       - echo $IMAGE_TAG
   pre_build:
     commands:
@@ -13,10 +17,11 @@ phases:
   build:
     commands:
       - echo build Docker image on `date`
-      - docker build -t httpd:"$CODEBUILD_BUILD_NUMBER" .
-      - docker tag httpd:latest 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:"$CODEBUILD_BUILD_NUMBER"
+      - docker build -t httpd:$CODEBUILD_BUILD_NUMBER .
+      - docker tag httpd:latest 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$IMAGE_TAG
   post_build:
     commands:
       - echo build Docker image complete `date`
       - echo push latest Docker images to ECR...
-      - docker push 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:"$CODEBUILD_BUILD_NUMBER"
+      - docker push 904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:$IMAGE_TAG
+~                                                                                    
