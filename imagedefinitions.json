@@ -1,9 +1,9 @@
 {
   "taskDefinition": {
-    "family": "hello-world",
+    "family": "httpdTask",
     "containerDefinitions": [
       {
-        "name": "hello-world",
+        "name": "httpdCon",
         "image": "904147861902.dkr.ecr.us-west-2.amazonaws.com/manik:latest",
         "cpu": 100,
         "portMappings": [
